@@ -1,6 +1,8 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -11,17 +13,25 @@ const io = socketIo(server, {
   },
 });
 
+const messagesFilePath = path.join(__dirname, "messages.json");
+
+// Load messages from file
+let messages = [];
+if (fs.existsSync(messagesFilePath)) {
+  const data = fs.readFileSync(messagesFilePath, "utf8");
+  messages = JSON.parse(data);
+}
+
 io.on("connection", (socket) => {
   console.log("New client connected");
 
-  // Simulate receiving a message from another user or the server
-  socket.emit("message", {
-    sender: "Server",
-    text: "Hello, this is a test message from the server!",
-  });
+  // Send existing messages to the client
+  socket.emit("loadMessages", messages);
 
   socket.on("message", (message) => {
-    io.emit("message", message);
+    messages.push(message);
+    fs.writeFileSync(messagesFilePath, JSON.stringify(messages, null, 2)); // Save messages to file
+    io.emit("message", message); // Broadcast message to all clients
   });
 
   socket.on("disconnect", () => {
