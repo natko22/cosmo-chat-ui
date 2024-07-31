@@ -1,30 +1,26 @@
 import React from "react";
-import { Box, Typography, Paper } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
-const ChatHistory = ({ chatMessages }) => {
+const ChatHistory = ({ chatMessages, messagesEndRef }) => {
   return (
-    <Box flex={1} overflow="auto" p={2}>
+    <Box flex="1" overflow="auto" p={2} bgcolor="#f5f5f5">
       {chatMessages.map((message, index) => (
-        <Paper
+        <Box
           key={index}
-          style={{
-            margin: "10px 0",
-            padding: "10px 20px",
-            alignSelf: message.sender === "me" ? "flex-end" : "flex-start",
-            backgroundColor: message.sender === "me" ? "#72397a9c" : "#e0e0e0",
-          }}
+          mb={2}
+          p={2}
+          borderRadius="5px"
+          bgcolor={message.sender === "me" ? "#8e44ad" : "#3498db"}
         >
-          <Typography variant="body1">
+          <Typography variant="body1" color="white">
             {message.sender}: {message.text}
           </Typography>
-          <Typography
-            variant="caption"
-            style={{ fontSize: "0.8em", color: "#aaa" }}
-          >
+          <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
             {new Date(message.timestamp).toLocaleString()}
           </Typography>
-        </Paper>
+        </Box>
       ))}
+      <div ref={messagesEndRef} />
     </Box>
   );
 };

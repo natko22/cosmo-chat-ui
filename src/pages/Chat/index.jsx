@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { Box, TextField, Button } from "@mui/material";
 import ChatHistory from "../../components/ChatHistory/index";
+import _ from "lodash";
 
 const socket = io("http://localhost:3001");
 
@@ -23,6 +24,7 @@ const Chat = () => {
 
     // Listen for incoming messages
     socket.on("message", (message) => {
+      console.log("New message received:", message); // Log all received messages
       setChatMessages((prevMessages) => {
         const newMessages = [...prevMessages, message];
         localStorage.setItem("chatMessages", JSON.stringify(newMessages)); // Save messages to localStorage
@@ -49,6 +51,9 @@ const Chat = () => {
     }
   };
 
+  // Debounce the sendMessage function to limit the rate of sending messages
+  const debouncedSendMessage = _.debounce(sendMessage, 1000);
+
   useEffect(() => {
     // Scroll to the bottom of the messages list whenever chatMessages state changes
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,8 +61,10 @@ const Chat = () => {
 
   return (
     <Box display="flex" flexDirection="column" height="100vh">
-      <ChatHistory chatMessages={chatMessages} />{" "}
-      {/* Use ChatHistory component */}
+      <ChatHistory
+        chatMessages={chatMessages}
+        messagesEndRef={messagesEndRef}
+      />
       <Box display="flex" p={2} bgcolor="#242122">
         <TextField
           fullWidth
@@ -65,16 +72,23 @@ const Chat = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          onKeyPress={(e) => (e.key === "Enter" ? sendMessage() : null)}
+          onKeyPress={(e) =>
+            e.key === "Enter" ? debouncedSendMessage() : null
+          }
           InputProps={{
             style: { color: "white" },
           }}
           sx={{ mr: 1 }}
         />
-        <Button variant="contained" color="secondary" onClick={sendMessage}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={debouncedSendMessage}
+        >
           Send
         </Button>
       </Box>
+      <div ref={messagesEndRef} />
     </Box>
   );
 };
