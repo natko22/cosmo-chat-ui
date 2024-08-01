@@ -213,5 +213,10 @@
     "text": "hallo?",
     "sender": "me",
     "timestamp": "2024-08-01T12:31:52.524Z"
+  },
+  {
+    "text": "Sorry, the AI is currently unavailable due to rate limits. Please try again later.",
+    "sender": "AI",
+    "timestamp": "2024-08-01T12:32:24.656Z"
   }
 ]
