@@ -3,36 +3,37 @@ import io from "socket.io-client";
 import { Box, TextField, Button } from "@mui/material";
 import ChatHistory from "../../components/ChatHistory/index";
 import _ from "lodash";
+import { useNavigate } from "react-router-dom";
+import ChatIcon from "@mui/icons-material/Chat";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 const socket = io("http://localhost:3001");
 
 const Chat = () => {
   const [chatMessages, setChatMessages] = useState(() => {
-    // Retrieve messages from localStorage on initial load
-    const savedMessages = localStorage.getItem("chatMessages");
+    const savedMessages = localStorage.getItem("messages"); // Changed from "chatMessages" to "messages"
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Load existing messages from server
     socket.on("loadMessages", (messages) => {
+      console.log("Loaded Messages: ", messages);
       setChatMessages(messages);
-      localStorage.setItem("chatMessages", JSON.stringify(messages)); // Save messages to localStorage
+      localStorage.setItem("messages", JSON.stringify(messages)); // Changed from "chatMessages" to "messages"
     });
 
-    // Listen for incoming messages
     socket.on("message", (message) => {
-      console.log("New message received:", message); // Log all received messages
+      console.log("New message received:", message);
       setChatMessages((prevMessages) => {
         const newMessages = [...prevMessages, message];
-        localStorage.setItem("chatMessages", JSON.stringify(newMessages)); // Save messages to localStorage
+        localStorage.setItem("messages", JSON.stringify(newMessages)); // Changed from "chatMessages" to "messages"
         return newMessages;
       });
     });
 
-    // Cleanup function to remove listeners when the component unmounts
     return () => {
       socket.off("message");
       socket.off("loadMessages");
@@ -46,21 +47,37 @@ const Chat = () => {
         sender: "me",
         timestamp: new Date().toISOString(),
       };
-      socket.emit("message", message); // Emit the message to the server
-      setInput(""); // Clear the input field
+      socket.emit("message", message);
+      setInput("");
     }
   };
 
-  // Debounce the sendMessage function to limit the rate of sending messages
   const debouncedSendMessage = _.debounce(sendMessage, 1000);
 
   useEffect(() => {
-    // Scroll to the bottom of the messages list whenever chatMessages state changes
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
   return (
     <Box display="flex" flexDirection="column" height="100vh">
+      <Box display="flex" justifyContent="right" mt={2}>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/activity")}
+          style={{ marginRight: "10px" }}
+          color="secondary"
+        >
+          <ChatIcon />
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/dashboard")}
+          color="info"
+          style={{ marginRight: "10px" }}
+        >
+          <DashboardIcon />
+        </Button>
+      </Box>
       <ChatHistory
         chatMessages={chatMessages}
         messagesEndRef={messagesEndRef}
@@ -75,9 +92,7 @@ const Chat = () => {
           onKeyPress={(e) =>
             e.key === "Enter" ? debouncedSendMessage() : null
           }
-          InputProps={{
-            style: { color: "white" },
-          }}
+          InputProps={{ style: { color: "white" } }}
           sx={{ mr: 1 }}
         />
         <Button

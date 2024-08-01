@@ -27,6 +27,9 @@ let messages = [];
 if (fs.existsSync(messagesFilePath)) {
   const data = fs.readFileSync(messagesFilePath, "utf8");
   messages = JSON.parse(data);
+  console.log("Loaded messages from file:", messages);
+} else {
+  console.log("No existing messages file found. Starting fresh.");
 }
 
 const rateLimitQueue = [];
@@ -72,12 +75,15 @@ io.on("connection", (socket) => {
 
   // Send existing messages to the client
   socket.emit("loadMessages", messages);
+  console.log("Sent existing messages to the client");
 
   socket.on("message", (message) => {
     console.log("Received message from client:", message);
     messages.push(message);
     fs.writeFileSync(messagesFilePath, JSON.stringify(messages, null, 2)); // Save messages to file
+    console.log("Saved message to file:", message);
     io.emit("message", message); // Broadcast message to all clients
+    console.log("Broadcasted message to all clients:", message);
 
     rateLimitQueue.push({ socket, message });
     processQueue();

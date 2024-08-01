@@ -10,7 +10,7 @@ const ChatHistory = ({ chatMessages, messagesEndRef }) => {
           mb={2}
           p={2}
           borderRadius="5px"
-          bgcolor={message.sender === "me" ? "#8e44ad" : "#3498db"}
+          bgcolor={message.sender === "me" ? "#8e44ad" : "#32063b"}
         >
           <Typography variant="body1" color="white">
             {message.sender}: {message.text}
