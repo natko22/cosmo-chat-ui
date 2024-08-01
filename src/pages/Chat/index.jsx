@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { Box, TextField, Button } from "@mui/material";
+import { useParams } from "react-router-dom";
 import ChatHistory from "../../components/ChatHistory/index";
-import _ from "lodash";
 import { useNavigate } from "react-router-dom";
 import ChatIcon from "@mui/icons-material/Chat";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -10,33 +10,38 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 const socket = io("http://localhost:3001");
 
 const Chat = () => {
-  const [chatMessages, setChatMessages] = useState(() => {
-    const savedMessages = localStorage.getItem("messages"); // Changed from "chatMessages" to "messages"
-    return savedMessages ? JSON.parse(savedMessages) : [];
-  });
+  const { sessionId } = useParams();
+  const [chatMessages, setChatMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.on("loadMessages", (messages) => {
-      console.log("Loaded Messages: ", messages);
-      setChatMessages(messages);
-      localStorage.setItem("messages", JSON.stringify(messages)); // Changed from "chatMessages" to "messages"
-    });
+    const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
+    const session = storedSessions.find(
+      (session) => session.date === sessionId
+    );
+    if (session) {
+      setChatMessages(session.chats);
+    } else {
+      const globalChatMessages =
+        JSON.parse(localStorage.getItem("chatMessages")) || [];
+      setChatMessages(globalChatMessages);
+    }
+  }, [sessionId]);
 
+  useEffect(() => {
     socket.on("message", (message) => {
       console.log("New message received:", message);
       setChatMessages((prevMessages) => {
         const newMessages = [...prevMessages, message];
-        localStorage.setItem("messages", JSON.stringify(newMessages)); // Changed from "chatMessages" to "messages"
+        localStorage.setItem("chatMessages", JSON.stringify(newMessages));
         return newMessages;
       });
     });
 
     return () => {
       socket.off("message");
-      socket.off("loadMessages");
     };
   }, []);
 
@@ -52,7 +57,19 @@ const Chat = () => {
     }
   };
 
-  const debouncedSendMessage = _.debounce(sendMessage, 1000);
+  const endSession = () => {
+    const currentSession = {
+      date: new Date().toISOString(),
+      chats: chatMessages,
+    };
+
+    const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
+    storedSessions.push(currentSession);
+    localStorage.setItem("sessions", JSON.stringify(storedSessions));
+
+    setChatMessages([]);
+    localStorage.removeItem("chatMessages");
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -89,18 +106,20 @@ const Chat = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          onKeyPress={(e) =>
-            e.key === "Enter" ? debouncedSendMessage() : null
-          }
+          onKeyPress={(e) => (e.key === "Enter" ? sendMessage() : null)}
           InputProps={{ style: { color: "white" } }}
           sx={{ mr: 1 }}
         />
         <Button
           variant="contained"
           color="secondary"
-          onClick={debouncedSendMessage}
+          onClick={sendMessage}
+          sx={{ mr: 1 }}
         >
           Send
+        </Button>
+        <Button variant="contained" color="error" onClick={endSession}>
+          End
         </Button>
       </Box>
       <div ref={messagesEndRef} />

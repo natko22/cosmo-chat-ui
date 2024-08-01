@@ -19,13 +19,13 @@ const transformMessagesToSessions = (messages) => {
   let currentSession = { date: "", chats: [] };
 
   messages.forEach((message) => {
-    const messageDate = new Date(message.timestamp).toISOString().split("T")[0];
+    const messageTimestamp = new Date(message.timestamp).toISOString();
 
-    if (currentSession.date !== messageDate) {
+    if (currentSession.date !== messageTimestamp) {
       if (currentSession.date) {
         sessions.push(currentSession);
       }
-      currentSession = { date: messageDate, chats: [message] };
+      currentSession = { date: messageTimestamp, chats: [message] };
     } else {
       currentSession.chats.push(message);
     }
@@ -51,15 +51,11 @@ const Activity = () => {
 
   useEffect(() => {
     const fetchSessions = () => {
-      const storedMessages = JSON.parse(localStorage.getItem("messages")) || [];
-      console.log("Stored Messages: ", storedMessages);
-      const transformedSessions = transformMessagesToSessions(storedMessages);
-      localStorage.setItem("sessions", JSON.stringify(transformedSessions));
-      setSessions(transformedSessions.reverse());
-      setSessionDates(transformedSessions.map((data) => data.date));
-      setSessionChatLengths(
-        transformedSessions.map((data) => data.chats.length)
-      );
+      const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
+      console.log("Stored Sessions: ", storedSessions);
+      setSessions(storedSessions.reverse());
+      setSessionDates(storedSessions.map((data) => data.date));
+      setSessionChatLengths(storedSessions.map((data) => data.chats.length));
       setLoading(false);
     };
     fetchSessions();
@@ -70,7 +66,6 @@ const Activity = () => {
     length: sessionChatLengths[index],
   }));
 
-  // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -89,6 +84,12 @@ const Activity = () => {
     }
 
     return null;
+  };
+
+  const handleSessionClick = (session) => {
+    setSelectedSession((prevSession) =>
+      prevSession === session ? null : session
+    );
   };
 
   return (
@@ -131,18 +132,32 @@ const Activity = () => {
       </Grid>
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         <Typography variant="h6">Details Chat Activity</Typography>
+        {sessions.length > 2 && (
+          <Box mt={2}>
+            <Button
+              variant="contained"
+              onClick={() => setViewAll(!viewAll)}
+              sx={{
+                backgroundColor: "#8e44ad",
+                "&:hover": { backgroundColor: "#732d91" },
+              }}
+            >
+              {viewAll ? "Show Less" : "See All"}
+            </Button>
+          </Box>
+        )}
         <Grid container spacing={2}>
           {sessions.length === 0 ? (
             <Typography>No sessions available.</Typography>
           ) : (
             sessions
-              .slice(0, viewAll ? sessions.length : 5)
+              .slice(0, viewAll ? sessions.length : 2)
               .map((session, index) => (
                 <Grid
                   item
                   xs={12}
                   key={index}
-                  onClick={() => setSelectedSession(session)}
+                  onClick={() => handleSessionClick(session)}
                 >
                   <Box
                     display="flex"
@@ -152,7 +167,7 @@ const Activity = () => {
                     borderRadius="5px"
                   >
                     <Typography variant="body1">
-                      {new Date(session.date).toLocaleDateString()}
+                      {new Date(session.date).toLocaleString()}
                     </Typography>
                     <Typography variant="body2">
                       {session.chats.length} Messages
@@ -166,9 +181,19 @@ const Activity = () => {
       {selectedSession && (
         <Grid item xs={12}>
           <Box mt={2} p={2} bgcolor="#f0f0f0" borderRadius="5px">
+            <Button
+              variant="contained"
+              onClick={() => setSelectedSession(null)}
+              sx={{
+                backgroundColor: "#8e44ad",
+                "&:hover": { backgroundColor: "#732d91" },
+                marginBottom: "10px",
+              }}
+            >
+              Close
+            </Button>
             <Typography variant="h6">
-              Chat History for{" "}
-              {new Date(selectedSession.date).toLocaleDateString()}
+              Chat History for {new Date(selectedSession.date).toLocaleString()}
             </Typography>
             <ChatHistory
               chatMessages={selectedSession.chats}
@@ -176,20 +201,6 @@ const Activity = () => {
             />
           </Box>
         </Grid>
-      )}
-      {sessions.length > 0 && !viewAll && (
-        <Box mt={2}>
-          <Button
-            variant="contained"
-            onClick={() => setViewAll(true)}
-            sx={{
-              backgroundColor: "#8e44ad",
-              "&:hover": { backgroundColor: "#732d91" },
-            }}
-          >
-            See All
-          </Button>
-        </Box>
       )}
     </Grid>
   );
