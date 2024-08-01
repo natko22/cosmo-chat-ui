@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Grid, CircularProgress, Typography, Box, Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Import ArrowBack icon
 import {
   BarChart,
   Bar,
@@ -44,10 +45,11 @@ const Activity = () => {
   const [sessionDates, setSessionDates] = useState([]);
   const [sessionChatLengths, setSessionChatLengths] = useState([]);
   const [sessions, setSessions] = useState([]);
-  const [selectedSession, setSelectedSession] = useState(null);
+  const [selectedSessionIndex, setSelectedSessionIndex] = useState(null);
   const [viewAll, setViewAll] = useState(false);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
+  const sessionDetailsRef = useRef(null);
 
   useEffect(() => {
     const fetchSessions = () => {
@@ -86,25 +88,45 @@ const Activity = () => {
     return null;
   };
 
-  const handleSessionClick = (session) => {
-    setSelectedSession((prevSession) =>
-      prevSession === session ? null : session
+  const handleSessionClick = (index) => {
+    setSelectedSessionIndex((prevIndex) =>
+      prevIndex === index ? null : index
     );
+    sessionDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <Grid container style={{ padding: "20px" }}>
-      <Box mt={2} mb={2}>
-        <Button
-          variant="contained"
-          onClick={() => navigate("/")}
-          sx={{
-            backgroundColor: "#8e44ad",
-            "&:hover": { backgroundColor: "#732d91" },
-          }}
-        >
-          <HomeIcon sx={{ color: "white" }} />
-        </Button>
+      <Box
+        mt={2}
+        mb={2}
+        display="flex"
+        justifyContent="space-between"
+        width="100%"
+      >
+        <Box>
+          <Button
+            variant="contained"
+            onClick={() => navigate(-1)}
+            sx={{
+              backgroundColor: "#8e44ad",
+              "&:hover": { backgroundColor: "#732d91" },
+              marginRight: "10px",
+            }}
+          >
+            <ArrowBackIcon sx={{ color: "white" }} />
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/")}
+            sx={{
+              backgroundColor: "#8e44ad",
+              "&:hover": { backgroundColor: "#732d91" },
+            }}
+          >
+            <HomeIcon sx={{ color: "white" }} />
+          </Button>
+        </Box>
       </Box>
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         <Typography variant="h4">Your Statistics</Typography>
@@ -133,7 +155,7 @@ const Activity = () => {
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         <Typography variant="h6">Details Chat Activity</Typography>
         {sessions.length > 2 && (
-          <Box mt={2}>
+          <Box mt={2} mb={2}>
             <Button
               variant="contained"
               onClick={() => setViewAll(!viewAll)}
@@ -146,62 +168,65 @@ const Activity = () => {
             </Button>
           </Box>
         )}
-        <Grid container spacing={2}>
+        <Grid container spacing={2} mb={2}>
           {sessions.length === 0 ? (
             <Typography>No sessions available.</Typography>
           ) : (
             sessions
               .slice(0, viewAll ? sessions.length : 2)
               .map((session, index) => (
-                <Grid
-                  item
-                  xs={12}
-                  key={index}
-                  onClick={() => handleSessionClick(session)}
-                >
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    p={2}
-                    bgcolor="#f0f0f0"
-                    borderRadius="5px"
+                <React.Fragment key={index}>
+                  <Grid
+                    item
+                    xs={12}
+                    onClick={() => handleSessionClick(index)}
+                    sx={{ cursor: "pointer" }} // Change cursor to pointer
                   >
-                    <Typography variant="body1">
-                      {new Date(session.date).toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2">
-                      {session.chats.length} Messages
-                    </Typography>
-                  </Box>
-                </Grid>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      p={2}
+                      bgcolor="#f0f0f0"
+                      borderRadius="5px"
+                    >
+                      <Typography variant="body1">
+                        {new Date(session.date).toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2">
+                        {session.chats.length} Messages
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  {selectedSessionIndex === index && (
+                    <Grid item xs={12} ref={sessionDetailsRef}>
+                      <Box mt={2} p={2} bgcolor="#f0f0f0" borderRadius="5px">
+                        <Button
+                          variant="contained"
+                          onClick={() => setSelectedSessionIndex(null)}
+                          sx={{
+                            backgroundColor: "#8e44ad",
+                            "&:hover": { backgroundColor: "#732d91" },
+                            marginBottom: "10px",
+                          }}
+                        >
+                          Close
+                        </Button>
+                        <Typography variant="h6">
+                          Chat History for{" "}
+                          {new Date(session.date).toLocaleString()}
+                        </Typography>
+                        <ChatHistory
+                          chatMessages={session.chats}
+                          messagesEndRef={messagesEndRef}
+                        />
+                      </Box>
+                    </Grid>
+                  )}
+                </React.Fragment>
               ))
           )}
         </Grid>
       </Grid>
-      {selectedSession && (
-        <Grid item xs={12}>
-          <Box mt={2} p={2} bgcolor="#f0f0f0" borderRadius="5px">
-            <Button
-              variant="contained"
-              onClick={() => setSelectedSession(null)}
-              sx={{
-                backgroundColor: "#8e44ad",
-                "&:hover": { backgroundColor: "#732d91" },
-                marginBottom: "10px",
-              }}
-            >
-              Close
-            </Button>
-            <Typography variant="h6">
-              Chat History for {new Date(selectedSession.date).toLocaleString()}
-            </Typography>
-            <ChatHistory
-              chatMessages={selectedSession.chats}
-              messagesEndRef={messagesEndRef}
-            />
-          </Box>
-        </Grid>
-      )}
     </Grid>
   );
 };
