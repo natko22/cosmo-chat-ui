@@ -1,3 +1,4 @@
+// src/components/ChatHistory/index.jsx
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
@@ -13,7 +14,7 @@ const ChatHistory = ({ chatMessages, messagesEndRef }) => {
           bgcolor={message.sender === "me" ? "#8e44ad" : "#32063b"}
         >
           <Typography variant="body1" color="white">
-            {message.sender}: {message.text}
+            {message.sender === "me" ? "You" : message.sender}: {message.text}
           </Typography>
           <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
             {new Date(message.timestamp).toLocaleString()}
