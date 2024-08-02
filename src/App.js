@@ -6,7 +6,6 @@ import Login from "./pages/auth/Login";
 import Chat from "./pages/Chat";
 import Activity from "./pages/Activity";
 import ActivityDashboard from "./pages/ActivityDashboard";
-import PrivateRoute from "./components/PrivateRoute";
 
 const App = () => {
   return (
@@ -14,30 +13,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/chat/:sessionId"
-          element={
-            <PrivateRoute>
-              <Chat />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/activity"
-          element={
-            <PrivateRoute>
-              <Activity />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <ActivityDashboard />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/activity" element={<Activity />} />
+        <Route path="/dashboard" element={<ActivityDashboard />} />
       </Routes>
     </Router>
   );
