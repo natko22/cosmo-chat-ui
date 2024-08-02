@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# Cosmo Chat Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to Cosmo Chat, a chat application integrated with OpenAI's API. This project allows users to interact with an AI chatbot, save their chat messages, and view detailed analytics of their interactions.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Screenshots](#screenshots)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
+- [License](#license)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Home Page**: Start a chat with a click of a button.
+- **AI Integration**: Communicate with an AI using OpenAI's API.
+- **Message Saving**: Save chat messages and sessions locally.
+- **Real-time Communication**: Utilize WebSocket for real-time message updates.
+- **Activity Dashboard**: View a graphical representation of your chat history by date.
+- **User Dashboard**: Analyze users, chats, and messages based on selected dates.
+- **Material-UI**: Stylish and responsive UI components.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+To run this project locally, follow these steps:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Clone the repository**:
 
-### `npm run build`
+   ```sh
+   git clone https://github.com/your-username/cosmo-chat.git
+   cd cosmo-chat
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. **Install dependencies**:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```sh
+   npm install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Set up the OpenAI API**:
 
-### `npm run eject`
+   - Obtain an API key from [OpenAI](https://beta.openai.com/signup/).
+   - Create a `.env` file in the root directory and add your API key:
+     ```env
+     REACT_APP_OPENAI_API_KEY=your_openai_api_key
+     ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. **Set up the WebSocket server**:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   - Ensure you have a WebSocket server running. This project assumes it's running at `http://localhost:3001`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. **Start the development server**:
+   ```sh
+   npm start
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Usage
 
-## Learn More
+1. **Home Page**: Click the "Start Chat" button to begin interacting with the AI.
+2. **Chat Page**: Send messages to the AI. Your messages will be saved automatically and updated in real-time.
+3. **Activity Dashboard**: Navigate to the activity dashboard to view chat analytics by date.
+4. **User Dashboard**: Select a date to see detailed user activity, including users, chats, and messages sent.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Components
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Home**: The landing page with a welcome message and a button to start chatting.
+- **Chat**: The chat interface where users can communicate with the AI.
+- **Activity Dashboard**: Displays a graph of chat activities over time.
+- **User Dashboard**: Provides detailed analytics based on user activity and selected dates.
 
-### Code Splitting
+## Screenshots
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Home Page
 
-### Analyzing the Bundle Size
+![Home Page](src/assets/images/home.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Chat Page
 
-### Making a Progressive Web App
+![Chat Page](src/assets/images/chat.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Activity Dashboard
 
-### Advanced Configuration
+![Activity Dashboard](src/assets/images/useractivity.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### User Dashboard
 
-### Deployment
+![User Dashboard](src/assets/images/dashboard.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Technologies Used
 
-### `npm run build` fails to minify
+- **React**: JavaScript library for building user interfaces.
+- **Material-UI**: React component library for faster and easier web development.
+- **Socket.IO**: Real-time bidirectional event-based communication.
+- **OpenAI API**: Integration for AI-powered chat responses.
+- **WebSocket**: Protocol for real-time communication.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Contributing
+
+We welcome contributions! Please follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a new branch:
+   ```sh
+   git checkout -b feature/your-feature-name
+   ```
+3. Commit your changes:
+   ```sh
+   git commit -m 'Add your feature'
+   ```
+4. Push to the branch:
+   ```sh
+   git push origin feature/your-feature-name
+   ```
+5. Open a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+---
+
+**Happy Chatting!** 🚀👾💬
