@@ -1,8 +1,9 @@
 import React from "react";
 import { Button, Box, Typography, keyframes } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import backgroundImage from "../../assets/images/istockphoto-165753498-612x612.jpg";
+import backgroundImage from "../../assets/images/istockphoto-165753498-612x612.jpg"; // Importing the background image
 
+// Keyframes for fade-in animation
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -13,8 +14,9 @@ const fadeIn = keyframes`
 `;
 
 const Home = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
+  // Function to handle "Start Chat" button click
   const handleStartChat = () => {
     navigate("/chat");
   };
@@ -46,6 +48,7 @@ const Home = () => {
       >
         Welcome to Cosmo Chat
       </Typography>
+
       <Typography
         variant="h4"
         gutterBottom
@@ -59,6 +62,7 @@ const Home = () => {
       >
         Connect with the universe
       </Typography>
+
       <Button
         variant="contained"
         onClick={handleStartChat}

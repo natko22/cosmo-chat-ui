@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-comment-textnodes */
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { Box, TextField, Button } from "@mui/material";
@@ -7,15 +8,17 @@ import { useNavigate } from "react-router-dom";
 import ChatIcon from "@mui/icons-material/Chat";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
+// Initialize Socket.IO client connection
 const socket = io("http://localhost:3001");
 
 const Chat = () => {
-  const { sessionId } = useParams();
-  const [chatMessages, setChatMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
-  const navigate = useNavigate();
+  const { sessionId } = useParams(); // Retrieve sessionId from URL parameters
+  const [chatMessages, setChatMessages] = useState([]); // State to hold chat messages
+  const [input, setInput] = useState(""); // State to hold input message
+  const messagesEndRef = useRef(null); // Ref to handle auto-scrolling
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
+  // Load chat messages from local storage based on sessionId
   useEffect(() => {
     const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
     const session = storedSessions.find(
@@ -30,21 +33,24 @@ const Chat = () => {
     }
   }, [sessionId]);
 
+  // Set up Socket.IO event listeners
   useEffect(() => {
     socket.on("message", (message) => {
       console.log("New message received:", message);
       setChatMessages((prevMessages) => {
         const newMessages = [...prevMessages, message];
-        localStorage.setItem("chatMessages", JSON.stringify(newMessages));
+        localStorage.setItem("chatMessages", JSON.stringify(newMessages)); // Save new messages to local storage
         return newMessages;
       });
     });
 
+    // Clean up event listener on component unmount
     return () => {
       socket.off("message");
     };
   }, []);
 
+  // Function to send a new message
   const sendMessage = () => {
     if (input.trim()) {
       const message = {
@@ -52,11 +58,12 @@ const Chat = () => {
         sender: "me",
         timestamp: new Date().toISOString(),
       };
-      socket.emit("message", message);
-      setInput("");
+      socket.emit("message", message); // Emit the message to the server
+      setInput(""); // Clear the input field
     }
   };
 
+  // Function to end the current chat session
   const endSession = () => {
     const currentSession = {
       date: new Date().toISOString(),
@@ -64,13 +71,14 @@ const Chat = () => {
     };
 
     const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
-    storedSessions.push(currentSession);
+    storedSessions.push(currentSession); // Add current session to stored sessions
     localStorage.setItem("sessions", JSON.stringify(storedSessions));
 
-    setChatMessages([]);
-    localStorage.removeItem("chatMessages");
+    setChatMessages([]); // Clear chat messages
+    localStorage.removeItem("chatMessages"); // Remove chat messages from local storage
   };
 
+  // Scroll to the latest message whenever chatMessages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
@@ -80,7 +88,7 @@ const Chat = () => {
       <Box display="flex" justifyContent="right" mt={2}>
         <Button
           variant="contained"
-          onClick={() => navigate("/activity")}
+          onClick={() => navigate("/activity")} // Navigate to activity page
           style={{ marginRight: "10px" }}
           color="secondary"
         >
@@ -88,7 +96,7 @@ const Chat = () => {
         </Button>
         <Button
           variant="contained"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/dashboard")} // Navigate to dashboard page
           color="info"
           style={{
             marginRight: "10px",
@@ -100,29 +108,30 @@ const Chat = () => {
         </Button>
       </Box>
       <ChatHistory
-        chatMessages={chatMessages}
-        messagesEndRef={messagesEndRef}
+        chatMessages={chatMessages} // Pass chat messages to ChatHistory component
+        messagesEndRef={messagesEndRef} // Pass ref to ChatHistory component for auto-scrolling
       />
       <Box display="flex" p={2} bgcolor="#242122">
         <TextField
           fullWidth
           variant="outlined"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => setInput(e.target.value)} // Update input state on change
           placeholder="Type a message..."
-          onKeyPress={(e) => (e.key === "Enter" ? sendMessage() : null)}
+          onKeyPress={(e) => (e.key === "Enter" ? sendMessage() : null)} // Send message on Enter key press
           InputProps={{ style: { color: "white" } }}
           sx={{ mr: 1 }}
         />
         <Button
           variant="contained"
           color="secondary"
-          onClick={sendMessage}
+          onClick={sendMessage} // Send message on click
           sx={{ mr: 1 }}
         >
           Send
         </Button>
         <Button variant="contained" color="error" onClick={endSession}>
+          {" "}
           End
         </Button>
       </Box>

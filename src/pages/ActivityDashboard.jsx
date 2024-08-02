@@ -18,11 +18,13 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
+// Fetch sessions from local storage
 const fetchSessions = () => {
   const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
   return storedSessions;
 };
 
+// Calculate metrics based on sessions data
 const calculateMetrics = (sessions) => {
   let activeUsers = new Set();
   let messagesSent = 0;
@@ -56,10 +58,11 @@ const ActivityDashboard = () => {
     sessionsInitiated: 0,
     engagementIndicators: [],
   });
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const navigate = useNavigate();
+  const [startDate, setStartDate] = useState(null); // State for start date filter
+  const [endDate, setEndDate] = useState(null); // State for end date filter
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
+  // Effect to fetch sessions and calculate metrics based on date filters
   useEffect(() => {
     const sessions = fetchSessions();
     const filteredSessions = sessions.filter((session) => {
@@ -83,6 +86,7 @@ const ActivityDashboard = () => {
         width="100%"
       >
         <Box>
+          {/* Navigation Buttons */}
           <Button
             variant="contained"
             onClick={() => navigate(-1)}
@@ -108,6 +112,7 @@ const ActivityDashboard = () => {
         <Typography variant="h4">Activity Dashboard</Typography>
       </Box>
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
+        {/* Date Pickers for filtering sessions */}
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Grid container spacing={2}>
             <Grid item>
@@ -129,6 +134,7 @@ const ActivityDashboard = () => {
           </Grid>
         </LocalizationProvider>
       </Grid>
+      {/* Metrics Display */}
       <Grid item xs={12} md={4}>
         <Typography variant="h6">
           Active Users: {metrics.activeUsers}
@@ -144,6 +150,7 @@ const ActivityDashboard = () => {
           Sessions Initiated: {metrics.sessionsInitiated}
         </Typography>
       </Grid>
+      {/* Bar Chart */}
       <Grid item xs={12} style={{ marginTop: "20px" }}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={metrics.engagementIndicators}>
@@ -157,6 +164,7 @@ const ActivityDashboard = () => {
           </BarChart>
         </ResponsiveContainer>
       </Grid>
+      {/* Line Chart */}
       <Grid item xs={12} style={{ marginTop: "20px" }}>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={metrics.engagementIndicators}>

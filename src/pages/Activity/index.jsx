@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Grid, CircularProgress, Typography, Box, Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Import ArrowBack icon
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   BarChart,
   Bar,
@@ -15,6 +15,7 @@ import {
 import ChatHistory from "../../components/ChatHistory";
 import { useNavigate } from "react-router-dom";
 
+// Function to transform messages into sessions
 const transformMessagesToSessions = (messages) => {
   const sessions = [];
   let currentSession = { date: "", chats: [] };
@@ -41,16 +42,17 @@ const transformMessagesToSessions = (messages) => {
 };
 
 const Activity = () => {
-  const [loading, setLoading] = useState(true);
-  const [sessionDates, setSessionDates] = useState([]);
-  const [sessionChatLengths, setSessionChatLengths] = useState([]);
-  const [sessions, setSessions] = useState([]);
-  const [selectedSessionIndex, setSelectedSessionIndex] = useState(null);
-  const [viewAll, setViewAll] = useState(false);
-  const messagesEndRef = useRef(null);
-  const navigate = useNavigate();
-  const sessionDetailsRef = useRef(null);
+  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [sessionDates, setSessionDates] = useState([]); // State for session dates
+  const [sessionChatLengths, setSessionChatLengths] = useState([]); // State for session chat lengths
+  const [sessions, setSessions] = useState([]); // State for sessions data
+  const [selectedSessionIndex, setSelectedSessionIndex] = useState(null); // State for selected session index
+  const [viewAll, setViewAll] = useState(false); // State for toggling view all sessions
+  const messagesEndRef = useRef(null); // Ref for auto-scrolling to the end of messages
+  const navigate = useNavigate(); // Hook to programmatically navigate
+  const sessionDetailsRef = useRef(null); // Ref for scrolling to session details
 
+  // Fetch sessions from local storage on component mount
   useEffect(() => {
     const fetchSessions = () => {
       const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
@@ -63,11 +65,13 @@ const Activity = () => {
     fetchSessions();
   }, []);
 
+  // Prepare data for the bar chart
   const data = sessionDates.map((date, index) => ({
     date,
     length: sessionChatLengths[index],
   }));
 
+  // Custom tooltip for the bar chart
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -88,6 +92,7 @@ const Activity = () => {
     return null;
   };
 
+  // Handle session click to toggle display of session details
   const handleSessionClick = (index) => {
     setSelectedSessionIndex((prevIndex) =>
       prevIndex === index ? null : index
@@ -104,6 +109,7 @@ const Activity = () => {
         justifyContent="space-between"
         width="100%"
       >
+        {/* Navigation Buttons */}
         <Box>
           <Button
             variant="contained"
@@ -128,14 +134,17 @@ const Activity = () => {
           </Button>
         </Box>
       </Box>
+      {/* Page Title */}
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         <Typography variant="h4">Your Statistics</Typography>
       </Grid>
+      {/* Page Description */}
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         <Typography variant="body1">
           Graph of the conversation you had with AI this year.
         </Typography>
       </Grid>
+      {/* Bar Chart */}
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         {loading ? (
           <CircularProgress />
@@ -152,6 +161,7 @@ const Activity = () => {
           </ResponsiveContainer>
         )}
       </Grid>
+      {/* Session Details */}
       <Grid item xs={12} style={{ marginBottom: "20px" }}>
         <Typography variant="h6">Details Chat Activity</Typography>
         {sessions.length > 2 && (

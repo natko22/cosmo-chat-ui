@@ -5,13 +5,13 @@ const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
 const axios = require("axios");
-const cors = require("cors"); // Add this line
+const cors = require("cors");
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
-app.use(cors()); // Add this line
+app.use(cors());
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -30,6 +30,7 @@ if (fs.existsSync(messagesFilePath)) {
   messages = JSON.parse(data);
 }
 
+// Rate limiting queue to manage OpenAI API requests
 const rateLimitQueue = [];
 let isProcessingQueue = false;
 
@@ -65,25 +66,32 @@ const processQueue = async () => {
   }
 };
 
+// Handle new socket connections
 io.on("connection", (socket) => {
+  // Send existing messages to the connected client
   socket.emit("loadMessages", messages);
 
+  // Handle incoming messages
   socket.on("message", (message) => {
     messages.push(message);
     fs.writeFileSync(messagesFilePath, JSON.stringify(messages, null, 2)); // Save messages to file
     io.emit("message", message); // Broadcast message to all clients
 
+    // Add message to the rate limit queue for processing
     rateLimitQueue.push({ socket, message });
     processQueue();
   });
 
+  // Handle client disconnect
   socket.on("disconnect", () => {});
 });
 
+// Start the server
 server.listen(3001, () => {
   console.log("Server is running on port 3001");
 });
 
+// Function to make a request to OpenAI's API
 const makeOpenAIRequest = async (userMessage) => {
   const maxRetries = 5;
   let currentRetry = 0;
@@ -114,6 +122,7 @@ const makeOpenAIRequest = async (userMessage) => {
       return response.data.choices[0].message.content.trim();
     } catch (error) {
       if (error.response && error.response.status === 429) {
+        // Handle rate limit errors with exponential backoff
         const delay = Math.pow(2, currentRetry) * 1000;
         await new Promise((resolve) => setTimeout(resolve, delay));
         currentRetry++;
@@ -126,6 +135,7 @@ const makeOpenAIRequest = async (userMessage) => {
   throw new Error("Exceeded maximum retries");
 };
 
+// Function to get AI response using OpenAI's API
 const getAIResponse = async (userMessage) => {
   try {
     return await makeOpenAIRequest(userMessage);
