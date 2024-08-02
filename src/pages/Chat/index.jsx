@@ -90,7 +90,11 @@ const Chat = () => {
           variant="contained"
           onClick={() => navigate("/dashboard")}
           color="info"
-          style={{ marginRight: "10px" }}
+          style={{
+            marginRight: "10px",
+            color: "white",
+            backgroundColor: "#32063b",
+          }}
         >
           <DashboardIcon />
         </Button>

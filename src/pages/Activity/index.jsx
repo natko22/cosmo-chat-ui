@@ -180,7 +180,7 @@ const Activity = () => {
                     item
                     xs={12}
                     onClick={() => handleSessionClick(index)}
-                    sx={{ cursor: "pointer" }} // Change cursor to pointer
+                    sx={{ cursor: "pointer" }}
                   >
                     <Box
                       display="flex"
