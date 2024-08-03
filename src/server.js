@@ -86,6 +86,28 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {});
 });
 
+// New endpoint to delete a session
+app.delete("/sessions/:date", (req, res) => {
+  const { date } = req.params;
+  console.log("Delete request received for date:", date); // Log the date being deleted
+  let sessions = JSON.parse(fs.readFileSync(messagesFilePath, "utf8"));
+  console.log("Current sessions:", sessions); // Log current sessions
+
+  sessions = sessions.filter((session) => {
+    const sessionDate = new Date(session.date);
+    if (isNaN(sessionDate.getTime())) {
+      console.log(`Invalid date encountered: ${session.date}`);
+      return true; // Skip invalid dates
+    }
+    console.log(`Comparing ${sessionDate.toISOString()} with ${date}`); // Log comparison
+    return sessionDate.toISOString() !== date;
+  });
+
+  fs.writeFileSync(messagesFilePath, JSON.stringify(sessions, null, 2));
+  console.log("Updated sessions after deletion:", sessions); // Log updated sessions
+  res.status(200).json({ message: "Session deleted successfully" });
+});
+
 // Start the server
 server.listen(3001, () => {
   console.log("Server is running on port 3001");

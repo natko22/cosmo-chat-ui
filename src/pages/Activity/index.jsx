@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Grid, CircularProgress, Typography, Box, Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete icon
 import {
   BarChart,
   Bar,
@@ -14,35 +15,47 @@ import {
 } from "recharts";
 import ChatHistory from "../../components/ChatHistory";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// Function to transform messages into sessions
-const transformMessagesToSessions = (messages) => {
-  const sessions = [];
-  let currentSession = { date: "", chats: [] };
+const fetchSessions = () => {
+  const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
+  return storedSessions;
+};
 
-  messages.forEach((message) => {
-    const messageTimestamp = new Date(message.timestamp).toISOString();
+const calculateMetrics = (sessions) => {
+  let activeUsers = new Set();
+  let messagesSent = 0;
+  let sessionsInitiated = sessions.length;
+  let engagementIndicators = {};
 
-    if (currentSession.date !== messageTimestamp) {
-      if (currentSession.date) {
-        sessions.push(currentSession);
+  sessions.forEach((session) => {
+    session.chats.forEach((chat) => {
+      activeUsers.add(chat.sender);
+      messagesSent += 1;
+      const date = chat.timestamp.split("T")[0];
+      if (!engagementIndicators[date]) {
+        engagementIndicators[date] = { date, messages: 0, sessions: 0 };
       }
-      currentSession = { date: messageTimestamp, chats: [message] };
-    } else {
-      currentSession.chats.push(message);
-    }
+      engagementIndicators[date].messages += 1;
+    });
   });
 
-  if (currentSession.date) {
-    sessions.push(currentSession);
-  }
-
-  console.log("Transformed Sessions: ", sessions);
-  return sessions;
+  return {
+    activeUsers: activeUsers.size,
+    messagesSent,
+    sessionsInitiated,
+    engagementIndicators: Object.values(engagementIndicators),
+  };
 };
 
 const Activity = () => {
   const [loading, setLoading] = useState(true); // State for loading indicator
+  const [metrics, setMetrics] = useState({
+    activeUsers: 0,
+    messagesSent: 0,
+    sessionsInitiated: 0,
+    engagementIndicators: [],
+  }); // Add this line
   const [sessionDates, setSessionDates] = useState([]); // State for session dates
   const [sessionChatLengths, setSessionChatLengths] = useState([]); // State for session chat lengths
   const [sessions, setSessions] = useState([]); // State for sessions data
@@ -54,15 +67,16 @@ const Activity = () => {
 
   // Fetch sessions from local storage on component mount
   useEffect(() => {
-    const fetchSessions = () => {
-      const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
-      console.log("Stored Sessions: ", storedSessions);
+    const fetchSessionsData = () => {
+      const storedSessions = fetchSessions();
       setSessions(storedSessions.reverse());
+      const newMetrics = calculateMetrics(storedSessions);
+      setMetrics(newMetrics);
       setSessionDates(storedSessions.map((data) => data.date));
       setSessionChatLengths(storedSessions.map((data) => data.chats.length));
       setLoading(false);
     };
-    fetchSessions();
+    fetchSessionsData();
   }, []);
 
   // Prepare data for the bar chart
@@ -98,6 +112,23 @@ const Activity = () => {
       prevIndex === index ? null : index
     );
     sessionDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Handle deleting a session
+  const handleDeleteSession = async (date) => {
+    const encodedDate = encodeURIComponent(date);
+    console.log("Deleting session with date:", date);
+    try {
+      await axios.delete(`http://localhost:3001/sessions/${encodedDate}`);
+      const updatedSessions = sessions.filter(
+        (session) => session.date !== date
+      );
+      setSessions(updatedSessions);
+      const newMetrics = calculateMetrics(updatedSessions);
+      setMetrics(newMetrics);
+    } catch (error) {
+      console.error("Error deleting session:", error);
+    }
   };
 
   return (
@@ -205,6 +236,23 @@ const Activity = () => {
                       <Typography variant="body2">
                         {session.chats.length} Messages
                       </Typography>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteSession(session.date);
+                        }}
+                        sx={{
+                          marginTop: "10px",
+                          width: "fit-content",
+                          alignSelf: "flex-end",
+                          backgroundColor: "#e03636",
+                          "&:hover": { backgroundColor: "#c0392b" },
+                        }}
+                      >
+                        <DeleteIcon />
+                      </Button>
                     </Box>
                   </Grid>
                   {selectedSessionIndex === index && (
