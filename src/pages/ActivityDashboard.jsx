@@ -40,6 +40,7 @@ const calculateMetrics = (sessions) => {
         engagementIndicators[date] = { date, messages: 0, sessions: 0 };
       }
       engagementIndicators[date].messages += 1;
+      engagementIndicators[date].sessions += 1;
     });
   });
 
@@ -159,8 +160,8 @@ const ActivityDashboard = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="messages" fill="#82ca9d" />
-            <Bar dataKey="sessions" fill="#8884d8" />
+            <Bar dataKey="messages" fill="#78218b8f" />
+            <Bar dataKey="sessions" fill="#8884d8c4" />
           </BarChart>
         </ResponsiveContainer>
       </Grid>
@@ -173,8 +174,8 @@ const ActivityDashboard = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="messages" stroke="#82ca9d" />
-            <Line type="monotone" dataKey="sessions" stroke="#8884d8" />
+            <Line type="monotone" dataKey="messages" stroke="#78218b8f" />
+            <Line type="monotone" dataKey="sessions" stroke="#8884d8c4" />
           </LineChart>
         </ResponsiveContainer>
       </Grid>

@@ -458,5 +458,25 @@
     "text": "Sorry, the AI is currently unavailable due to rate limits. Please try again later.",
     "sender": "AI",
     "timestamp": "2024-08-03T10:57:35.040Z"
+  },
+  {
+    "text": "hello",
+    "sender": "me",
+    "timestamp": "2024-08-03T11:04:03.503Z"
+  },
+  {
+    "text": "how are you",
+    "sender": "me",
+    "timestamp": "2024-08-03T11:04:06.892Z"
+  },
+  {
+    "text": "Sorry, the AI is currently unavailable due to rate limits. Please try again later.",
+    "sender": "AI",
+    "timestamp": "2024-08-03T11:04:38.723Z"
+  },
+  {
+    "text": "Sorry, the AI is currently unavailable due to rate limits. Please try again later.",
+    "sender": "AI",
+    "timestamp": "2024-08-03T11:05:16.822Z"
   }
 ]
