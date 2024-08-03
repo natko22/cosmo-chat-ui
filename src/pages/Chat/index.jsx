@@ -84,8 +84,6 @@ const Chat = () => {
 
   return (
     <Box display="flex" flexDirection="column" height="100vh" bgcolor="#000000">
-      {" "}
-      {/* Set background color here */}
       <Box display="flex" justifyContent="right" mt={2}>
         <Button
           variant="contained"
@@ -109,16 +107,27 @@ const Chat = () => {
         </Button>
       </Box>
       <Box flexGrow={1} overflow="auto" p={2} bgcolor="#000000">
-        {" "}
-        {/* Set background color for chat messages */}
         <ChatHistory
           chatMessages={chatMessages} // Pass chat messages to ChatHistory component
           messagesEndRef={messagesEndRef} // Pass ref to ChatHistory component for auto-scrolling
         />
       </Box>
-      <Box display="flex" p={2} bgcolor="#1b1a1c">
-        {" "}
-        {/* Background color for input area */}
+      <Box
+        display="flex"
+        p={2}
+        bgcolor="#1b1a1c"
+        sx={{
+          "& .MuiButton-root": {
+            transition: "background-color 0.3s, transform 0.3s",
+            "&:hover": {
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          },
+        }}
+      >
         <TextField
           fullWidth
           variant="outlined"
@@ -133,14 +142,33 @@ const Chat = () => {
           variant="contained"
           color="secondary"
           onClick={sendMessage} // Send message on click
-          sx={{ mr: 1 }}
+          sx={{
+            mr: 1,
+            backgroundColor: "#6a1b9a", // Default color
+            "&:hover": {
+              backgroundColor: "#8e24aa", // Hover color
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          }}
         >
           Send
         </Button>
         <Button
           variant="contained"
           onClick={endSession}
-          style={{ backgroundColor: "#32063b" }}
+          sx={{
+            backgroundColor: "#32063b", // Default color
+            "&:hover": {
+              backgroundColor: "#452a59", // Hover color
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          }}
         >
           End
         </Button>
