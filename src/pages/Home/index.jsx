@@ -14,7 +14,7 @@ const fadeIn = keyframes`
 `;
 
 const Home = () => {
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const navigate = useNavigate();
 
   // Function to handle "Start Chat" button click
   const handleStartChat = () => {
@@ -36,7 +36,7 @@ const Home = () => {
       }}
     >
       <Typography
-        variant="h2"
+        variant="h1"
         gutterBottom
         sx={{
           color: "white",

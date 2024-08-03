@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material";
 
 const ChatHistory = ({ chatMessages, messagesEndRef }) => {
   return (
-    <Box flex="1" overflow="auto" p={2} bgcolor="#f5f5f5">
+    <Box flex="1" overflow="auto" p={2} bgcolor="#000000">
       {chatMessages.map((message, index) => (
         <Box
           key={index}

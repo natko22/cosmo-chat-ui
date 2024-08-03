@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { Box, TextField, Button } from "@mui/material";
@@ -84,7 +83,9 @@ const Chat = () => {
   }, [chatMessages]);
 
   return (
-    <Box display="flex" flexDirection="column" height="100vh">
+    <Box display="flex" flexDirection="column" height="100vh" bgcolor="#000000">
+      {" "}
+      {/* Set background color here */}
       <Box display="flex" justifyContent="right" mt={2}>
         <Button
           variant="contained"
@@ -107,11 +108,17 @@ const Chat = () => {
           <DashboardIcon />
         </Button>
       </Box>
-      <ChatHistory
-        chatMessages={chatMessages} // Pass chat messages to ChatHistory component
-        messagesEndRef={messagesEndRef} // Pass ref to ChatHistory component for auto-scrolling
-      />
-      <Box display="flex" p={2} bgcolor="#242122">
+      <Box flexGrow={1} overflow="auto" p={2} bgcolor="#000000">
+        {" "}
+        {/* Set background color for chat messages */}
+        <ChatHistory
+          chatMessages={chatMessages} // Pass chat messages to ChatHistory component
+          messagesEndRef={messagesEndRef} // Pass ref to ChatHistory component for auto-scrolling
+        />
+      </Box>
+      <Box display="flex" p={2} bgcolor="#1b1a1c">
+        {" "}
+        {/* Background color for input area */}
         <TextField
           fullWidth
           variant="outlined"
@@ -130,8 +137,11 @@ const Chat = () => {
         >
           Send
         </Button>
-        <Button variant="contained" color="error" onClick={endSession}>
-          {" "}
+        <Button
+          variant="contained"
+          onClick={endSession}
+          style={{ backgroundColor: "#32063b" }}
+        >
           End
         </Button>
       </Box>
