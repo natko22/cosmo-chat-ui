@@ -1,8 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Grid, CircularProgress, Typography, Box, Button } from "@mui/material";
+import {
+  Grid,
+  CircularProgress,
+  Typography,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete icon
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
+import { useSnackbar } from "notistack"; // Import useSnackbar
 import {
   BarChart,
   Bar,
@@ -17,11 +30,13 @@ import ChatHistory from "../../components/ChatHistory";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// Function to fetch sessions from local storage
 const fetchSessions = () => {
   const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
   return storedSessions;
 };
 
+// Function to calculate metrics for the bar chart
 const calculateMetrics = (sessions) => {
   let activeUsers = new Set();
   let messagesSent = 0;
@@ -55,15 +70,18 @@ const Activity = () => {
     messagesSent: 0,
     sessionsInitiated: 0,
     engagementIndicators: [],
-  }); // Add this line
+  }); // State for metrics
   const [sessionDates, setSessionDates] = useState([]); // State for session dates
   const [sessionChatLengths, setSessionChatLengths] = useState([]); // State for session chat lengths
   const [sessions, setSessions] = useState([]); // State for sessions data
   const [selectedSessionIndex, setSelectedSessionIndex] = useState(null); // State for selected session index
   const [viewAll, setViewAll] = useState(false); // State for toggling view all sessions
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
+  const [sessionToDelete, setSessionToDelete] = useState(null); // State for the session to be deleted
   const messagesEndRef = useRef(null); // Ref for auto-scrolling to the end of messages
   const navigate = useNavigate(); // Hook to programmatically navigate
   const sessionDetailsRef = useRef(null); // Ref for scrolling to session details
+  const { enqueueSnackbar } = useSnackbar(); // Use useSnackbar hook
 
   // Fetch sessions from local storage on component mount
   useEffect(() => {
@@ -114,25 +132,62 @@ const Activity = () => {
     sessionDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Handle delete confirmation dialog open
+  const handleOpenDeleteDialog = (session) => {
+    setSessionToDelete(session);
+    setDeleteDialogOpen(true);
+  };
+
+  // Handle delete confirmation dialog close
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setSessionToDelete(null);
+  };
+
   // Handle deleting a session
-  const handleDeleteSession = async (date) => {
-    const encodedDate = encodeURIComponent(date);
-    console.log("Deleting session with date:", date);
-    try {
-      await axios.delete(`http://localhost:3001/sessions/${encodedDate}`);
-      const updatedSessions = sessions.filter(
-        (session) => session.date !== date
-      );
-      setSessions(updatedSessions);
-      const newMetrics = calculateMetrics(updatedSessions);
-      setMetrics(newMetrics);
-    } catch (error) {
-      console.error("Error deleting session:", error);
+  const handleDeleteSession = async () => {
+    if (sessionToDelete) {
+      const encodedDate = encodeURIComponent(sessionToDelete.date);
+      console.log("Deleting session with date:", sessionToDelete.date);
+      try {
+        await axios.delete(`http://localhost:3001/sessions/${encodedDate}`);
+        const updatedSessions = sessions.filter(
+          (session) => session.date !== sessionToDelete.date
+        );
+        setSessions(updatedSessions);
+        const newMetrics = calculateMetrics(updatedSessions);
+        setMetrics(newMetrics);
+        handleCloseDeleteDialog(); // Close dialog after deletion
+        enqueueSnackbar("Session deleted successfully !", {
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+          style: {
+            backgroundColor: "#8e44ad",
+            color: "#fff",
+            textAlign: "center",
+          },
+        });
+      } catch (error) {
+        console.error("Error deleting session:", error);
+        enqueueSnackbar("Error deleting session", {
+          variant: "error",
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+          style: {
+            backgroundColor: "#f44336",
+            color: "#fff",
+          },
+        });
+      }
     }
   };
 
   return (
-    <Grid container style={{ padding: "20px" }}>
+    <Grid container style={{ padding: "20px" }} justifyContent="flex-start">
       <Box
         mt={2}
         mb={2}
@@ -193,7 +248,7 @@ const Activity = () => {
         )}
       </Grid>
       {/* Session Details */}
-      <Grid item xs={12} style={{ marginBottom: "20px" }}>
+      <Grid item xs={12} md={8} lg={6} style={{ marginBottom: "20px" }}>
         <Typography variant="h6">Details Chat Activity</Typography>
         {sessions.length > 2 && (
           <Box mt={2} mb={2}>
@@ -229,6 +284,8 @@ const Activity = () => {
                       p={2}
                       bgcolor="#f0f0f0"
                       borderRadius="5px"
+                      boxShadow={3}
+                      width="100%"
                     >
                       <Typography variant="body1">
                         {new Date(session.date).toLocaleString()}
@@ -240,11 +297,11 @@ const Activity = () => {
                         variant="contained"
                         color="error"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteSession(session.date);
+                          e.stopPropagation(); // Prevent triggering session click
+                          handleOpenDeleteDialog(session);
                         }}
                         sx={{
-                          marginTop: "10px",
+                          marginTop: "-45px",
                           width: "fit-content",
                           alignSelf: "flex-end",
                           backgroundColor: "#e03636",
@@ -256,28 +313,41 @@ const Activity = () => {
                     </Box>
                   </Grid>
                   {selectedSessionIndex === index && (
-                    <Grid item xs={12} ref={sessionDetailsRef}>
-                      <Box mt={2} p={2} bgcolor="#f0f0f0" borderRadius="5px">
-                        <Button
-                          variant="contained"
-                          onClick={() => setSelectedSessionIndex(null)}
-                          sx={{
-                            backgroundColor: "#8e44ad",
-                            "&:hover": { backgroundColor: "#732d91" },
-                            marginBottom: "10px",
-                          }}
+                    <Grid item xs={12}>
+                      <Box
+                        mt={2}
+                        p={2}
+                        bgcolor="#f0f0f0"
+                        borderRadius="5px"
+                        boxShadow={3}
+                        width="100%"
+                      >
+                        <Box display="flex" justifyContent="flex-end">
+                          <Button
+                            variant="contained"
+                            onClick={() => setSelectedSessionIndex(null)}
+                            sx={{
+                              backgroundColor: "#8e44ad",
+                              "&:hover": { backgroundColor: "#732d91" },
+                              marginBottom: "10px",
+                            }}
+                          >
+                            <CloseIcon sx={{ color: "white" }} />
+                          </Button>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          sx={{ marginTop: "-3rem", paddingBottom: "20px" }}
                         >
-                          Close
-                        </Button>
-                        <Typography variant="h6">
                           Chat History for{" "}
                           {new Date(session.date).toLocaleString()}
                         </Typography>
                         <ChatHistory
                           chatMessages={session.chats}
                           messagesEndRef={messagesEndRef}
+                          sx={{ marginTop: "1rem" }} // Add this line
                         />
-                      </Box>
+                      </Box>{" "}
                     </Grid>
                   )}
                 </React.Fragment>
@@ -285,6 +355,34 @@ const Activity = () => {
           )}
         </Grid>
       </Grid>
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{
+              fontFamily: "Typewriter",
+            }}
+          >
+            Are you sure you want to delete this session? This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteSession} color="secondary">
+            Delete
+          </Button>
+          <Button onClick={handleCloseDeleteDialog} color="error" autoFocus>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };
