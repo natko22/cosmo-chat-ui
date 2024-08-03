@@ -160,6 +160,7 @@ const Activity = () => {
         handleCloseDeleteDialog(); // Close dialog after deletion
         enqueueSnackbar("Session deleted successfully !", {
           anchorOrigin: {
+            variant: "success",
             vertical: "top",
             horizontal: "right",
           },

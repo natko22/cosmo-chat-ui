@@ -89,23 +89,37 @@ io.on("connection", (socket) => {
 // New endpoint to delete a session
 app.delete("/sessions/:date", (req, res) => {
   const { date } = req.params;
-  console.log("Delete request received for date:", date); // Log the date being deleted
-  let sessions = JSON.parse(fs.readFileSync(messagesFilePath, "utf8"));
-  console.log("Current sessions:", sessions); // Log current sessions
+  console.log(`Received request to delete session with date: ${date}`);
 
-  sessions = sessions.filter((session) => {
+  let sessions = JSON.parse(fs.readFileSync(messagesFilePath, "utf8"));
+  console.log("Sessions before deletion:", sessions);
+
+  const updatedSessions = sessions.filter((session) => {
+    if (!session.date) {
+      console.error(`Invalid session date: ${session.date}`);
+      return true; // Keep session if date is invalid
+    }
+
     const sessionDate = new Date(session.date);
     if (isNaN(sessionDate.getTime())) {
-      console.log(`Invalid date encountered: ${session.date}`);
-      return true; // Skip invalid dates
+      console.error(`Invalid session date: ${session.date}`);
+      return true; // Keep session if date is invalid
     }
-    console.log(`Comparing ${sessionDate.toISOString()} with ${date}`); // Log comparison
+
     return sessionDate.toISOString() !== date;
   });
 
-  fs.writeFileSync(messagesFilePath, JSON.stringify(sessions, null, 2));
-  console.log("Updated sessions after deletion:", sessions); // Log updated sessions
-  res.status(200).json({ message: "Session deleted successfully" });
+  console.log("Updated sessions:", updatedSessions);
+
+  fs.writeFileSync(messagesFilePath, JSON.stringify(updatedSessions, null, 2));
+  console.log("Updated sessions written to file");
+
+  res
+    .status(200)
+    .json({
+      message: "Session deleted successfully",
+      sessions: updatedSessions,
+    });
 });
 
 // Start the server
