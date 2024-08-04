@@ -157,10 +157,12 @@ const Activity = () => {
         setSessions(updatedSessions);
         const newMetrics = calculateMetrics(updatedSessions);
         setMetrics(newMetrics);
-        handleCloseDeleteDialog(); // Close dialog after deletion
-        enqueueSnackbar("Session deleted successfully !", {
+        handleCloseDeleteDialog();
+        setSelectedSessionIndex(null); // Close the session details view
+
+        enqueueSnackbar("Session deleted successfully!", {
+          variant: "success",
           anchorOrigin: {
-            variant: "success",
             vertical: "top",
             horizontal: "right",
           },
@@ -294,23 +296,6 @@ const Activity = () => {
                       <Typography variant="body2">
                         {session.chats.length} Messages
                       </Typography>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent triggering session click
-                          handleOpenDeleteDialog(session);
-                        }}
-                        sx={{
-                          marginTop: "-45px",
-                          width: "fit-content",
-                          alignSelf: "flex-end",
-                          backgroundColor: "#e03636",
-                          "&:hover": { backgroundColor: "#c0392b" },
-                        }}
-                      >
-                        <DeleteIcon />
-                      </Button>
                     </Box>
                   </Grid>
                   {selectedSessionIndex === index && (
@@ -331,9 +316,25 @@ const Activity = () => {
                               backgroundColor: "#8e44ad",
                               "&:hover": { backgroundColor: "#732d91" },
                               marginBottom: "10px",
+                              marginRight: "10px",
                             }}
                           >
                             <CloseIcon sx={{ color: "white" }} />
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenDeleteDialog(session);
+                            }}
+                            sx={{
+                              backgroundColor: "#e03636",
+                              "&:hover": { backgroundColor: "#c0392b" },
+                              marginBottom: "10px",
+                            }}
+                          >
+                            <DeleteIcon />
                           </Button>
                         </Box>
                         <Typography
