@@ -234,7 +234,7 @@ const Activity = () => {
         </Typography>
       </Grid>
       {/* Bar Chart */}
-      <Grid item xs={12} style={{ marginBottom: "20px" }}>
+      <Grid item xs={12} style={{ marginBottom: "20px", marginLeft: "-2rem" }}>
         {loading ? (
           <CircularProgress />
         ) : (
