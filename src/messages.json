@@ -518,5 +518,45 @@
     "text": "Sorry, the AI is currently unavailable due to rate limits. Please try again later.",
     "sender": "AI",
     "timestamp": "2024-08-05T11:24:37.897Z"
+  },
+  {
+    "text": "Hello",
+    "sender": "me",
+    "timestamp": "2024-08-05T11:28:49.859Z"
+  },
+  {
+    "text": "Sorry, the AI is currently unavailable due to rate limits. Please try again later.",
+    "sender": "AI",
+    "timestamp": "2024-08-05T11:29:22.044Z"
+  },
+  {
+    "text": "What is cors?",
+    "sender": "me",
+    "timestamp": "2024-08-05T11:31:52.570Z"
+  },
+  {
+    "text": "CORS stands for Cross-Origin Resource Sharing, and it is a security feature implemented by web browsers to restrict how resources on a web page can be accessed by another domain. Essentially, CORS allows a server to specify who can access its resources by enforcing a set of rules defined in HTTP headers. This is important to prevent malicious scripts from accessing sensitive data on another domain without permission. To enable CORS on a server, the server needs to include specific response headers like `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`, and `Access-Control-Allow-Headers` to indicate which origins are allowed to access the resources, which methods are allowed for HTTP requests, and which headers are allowed in the request. By configuring CORS correctly, web applications can securely interact with resources",
+    "sender": "AI",
+    "timestamp": "2024-08-05T11:31:56.438Z"
+  },
+  {
+    "text": "is black a true color?",
+    "sender": "me",
+    "timestamp": "2024-08-05T11:32:15.671Z"
+  },
+  {
+    "text": "In the context of computer graphics and color theory, black is considered a true color. Black is the absence of light or the combination of all colors at their darkest intensity. In digital systems, black is represented as the absence of color channels (RGB values of 0,0,0) or as the lowest intensity in grayscale (value of 0).\n\nWhen working with color representations in software development, it's important to understand the additive and subtractive color models, as well as how different display technologies render colors. In digital design, black is a fundamental color that is used for various purposes, such as text readability, creating contrast, or defining boundaries.",
+    "sender": "AI",
+    "timestamp": "2024-08-05T11:32:18.039Z"
+  },
+  {
+    "text": "helo",
+    "sender": "me",
+    "timestamp": "2024-08-05T11:33:47.755Z"
+  },
+  {
+    "text": "Hello! How can I help you?",
+    "sender": "AI",
+    "timestamp": "2024-08-05T11:33:53.774Z"
   }
 ]
