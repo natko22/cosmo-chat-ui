@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -16,7 +17,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000", // Adjust this if your frontend runs on a different port
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -114,12 +115,10 @@ app.delete("/sessions/:date", (req, res) => {
   fs.writeFileSync(messagesFilePath, JSON.stringify(updatedSessions, null, 2));
   console.log("Updated sessions written to file");
 
-  res
-    .status(200)
-    .json({
-      message: "Session deleted successfully",
-      sessions: updatedSessions,
-    });
+  res.status(200).json({
+    message: "Session deleted successfully",
+    sessions: updatedSessions,
+  });
 });
 
 // Start the server

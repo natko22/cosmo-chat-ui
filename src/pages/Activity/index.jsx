@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from "react";
 import {
   Grid,
@@ -15,7 +16,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { useSnackbar } from "notistack"; // Import useSnackbar
+import { useSnackbar } from "notistack";
 import {
   BarChart,
   Bar,
@@ -79,7 +80,7 @@ const Activity = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
   const [sessionToDelete, setSessionToDelete] = useState(null); // State for the session to be deleted
   const messagesEndRef = useRef(null); // Ref for auto-scrolling to the end of messages
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const navigate = useNavigate();
   const sessionDetailsRef = useRef(null); // Ref for scrolling to session details
   const { enqueueSnackbar } = useSnackbar(); // Use useSnackbar hook
 
