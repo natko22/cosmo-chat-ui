@@ -90,6 +90,15 @@ const Chat = () => {
           onClick={() => navigate("/activity")} // Navigate to activity page
           style={{ marginRight: "10px" }}
           color="secondary"
+          sx={{
+            transition: " transform 0.3s",
+            "&:hover": {
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          }}
         >
           <ChatIcon />
         </Button>
@@ -100,7 +109,16 @@ const Chat = () => {
           style={{
             marginRight: "10px",
             color: "white",
-            backgroundColor: "#32063b",
+            backgroundColor: "#631f70",
+          }}
+          sx={{
+            transition: " transform 0.3s",
+            "&:hover": {
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
           }}
         >
           <DashboardIcon />
@@ -140,18 +158,18 @@ const Chat = () => {
         />
         <Button
           variant="contained"
-          color="secondary"
-          onClick={sendMessage} // Send message on click
+          onClick={sendMessage}
           sx={{
             mr: 1,
-            backgroundColor: "#6a1b9a", // Default color
+            backgroundColor: "#6a1b9a",
             "&:hover": {
-              backgroundColor: "#8e24aa", // Hover color
+              backgroundColor: "#8e24aa",
               transform: "scale(1.05)",
             },
             "&:active": {
               transform: "scale(0.95)",
             },
+            width: "100px",
           }}
         >
           Send
@@ -160,14 +178,15 @@ const Chat = () => {
           variant="contained"
           onClick={endSession}
           sx={{
-            backgroundColor: "#32063b", // Default color
+            backgroundColor: "#631f70",
             "&:hover": {
-              backgroundColor: "#452a59", // Hover color
+              backgroundColor: "#452a59",
               transform: "scale(1.05)",
             },
             "&:active": {
               transform: "scale(0.95)",
             },
+            width: "100px",
           }}
         >
           End
